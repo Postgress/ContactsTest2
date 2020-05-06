@@ -80,7 +80,6 @@ namespace contacts
 
         public void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-           // idCell = Convert.ToInt32(this.dataGridViewMain.CurrentRow.Cells["Id"].Value);
         }
 
         private void dataGridViewMain_CellEnter(object sender, DataGridViewCellEventArgs e)

@@ -168,11 +168,15 @@ namespace contacts.logic
             string connString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
             using (SqlConnection connection = new SqlConnection(connString))
             {
-                string sqlQueryString2 = "delete from Contacts where id=@id" + "delete from Numbers where id=@id";
-               
-                using (SqlCommand cmd = new SqlCommand(sqlQueryString2, connection))
+                connection.Open();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                string sqlQueryString2 = "delete from Contacts where id=@id" +  " delete from Numbers where Contact_id=@id";               
+                using (SqlCommand command = new SqlCommand(sqlQueryString2, connection))
                 {
-                    cmd.Parameters.Add(new SqlParameter("id", idCon));
+                    command.Parameters.Add(new SqlParameter("id", idCon));
+
+                    command.ExecuteNonQuery();
                 }
              
             }

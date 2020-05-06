@@ -45,10 +45,10 @@
             this.picB1 = new System.Windows.Forms.PictureBox();
             this.bCancel = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.num = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.typen = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.bCreate = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.Numbers = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Types = new System.Windows.Forms.DataGridViewComboBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -236,27 +236,14 @@
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.num,
-            this.typen});
+            this.Numbers,
+            this.Types});
             this.dataGridView1.Location = new System.Drawing.Point(85, 2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(491, 131);
             this.dataGridView1.TabIndex = 6;
             this.dataGridView1.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValidated);
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
-            // 
-            // num
-            // 
-            this.num.HeaderText = "Номер";
-            this.num.Name = "num";
-            this.num.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.num.Width = 250;
-            // 
-            // typen
-            // 
-            this.typen.HeaderText = "Тип";
-            this.typen.Name = "typen";
-            this.typen.Width = 200;
             // 
             // bCreate
             // 
@@ -277,6 +264,19 @@
             this.splitContainer2.Size = new System.Drawing.Size(668, 183);
             this.splitContainer2.SplitterDistance = 154;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // Numbers
+            // 
+            this.Numbers.HeaderText = "Numbers";
+            this.Numbers.Name = "Numbers";
+            this.Numbers.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Numbers.Width = 250;
+            // 
+            // Types
+            // 
+            this.Types.HeaderText = "Types";
+            this.Types.Name = "Types";
+            this.Types.Width = 200;
             // 
             // FormContact
             // 
@@ -334,8 +334,8 @@
         private System.Windows.Forms.MaskedTextBox dtBithday;
         private System.Windows.Forms.Button bCancel;
         private System.Windows.Forms.Label enterName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn num;
-        private System.Windows.Forms.DataGridViewComboBoxColumn typen;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Numbers;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Types;
     }
 }
 

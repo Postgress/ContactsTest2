@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Windows.Documents;
 using System.Windows.Forms;
 
 
@@ -16,23 +18,27 @@ namespace contacts
         bool flag = false;
         private BindingSource bindingSource = new BindingSource();
         public List<Phone> newPhones = new List<Phone>();
-
+        //List<EnumModel> enums = ((PhoneType[])Enum.GetValues(typeof(PhoneType))).Select(c => new EnumModel() { Value = (int)c, Name = c.ToString() }).ToList();
 
         public FormContact(Contact contact)
         {
             InitializeComponent();
             Contact = contact;
             Load += FormContact_Load;
+            newPhones = Contact.Numbers;
+
             dataGridView1.DataSource = bindingSource;
+            //bindingSource.DataSource = Contact.Numbers;
+            Numbers.DataPropertyName = "Number";
+            Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();     //Enum.GetValues(typeof(PhoneType));  
+            Types.DisplayMember = "Name";
+            Types.ValueMember = "Value";
+            Types.DataPropertyName = "Type";
             bindingSource.DataSource = Contact.Numbers;
-            typen.DataSource = Enum.GetValues(typeof(PhoneType));
 
-            num.DataPropertyName = "Number";
-            typen.DataPropertyName = "Type";
-            dataGridView1.Columns["Number"].Visible = false;
-            dataGridView1.Columns["Type"].Visible = false;
+            // dataGridView1.Columns["Number"].Visible = true;
+            //dataGridView1.Columns["Type"].Visible = true;
             dataGridView1.Columns["Contact_id"].Visible = false;
-
         }
 
         private void FormContact_Load(object sender, EventArgs e)
@@ -50,9 +56,9 @@ namespace contacts
             }
             if (txbName.Text.Length > 0) { bCreate.Text = "Сохранить"; flag = true; }
             else { enterName.Visible = true; flag = false; }
-           
-        }
 
+        }
+        
 
         private void picB1_Click(object sender, EventArgs e)
         {
@@ -72,18 +78,20 @@ namespace contacts
         }
         public Contact SaveChangesContact(Contact sContact)
         {
-            var i = dataGridView1.Rows.Count;
+            List<Phone> newPhone = new List<Phone>();
+            var i = dataGridView1.Rows.Count-1;
             var count = 0;
-            while (count < i-1)
+            while (count < i)
             {
-                newPhones.Add(new Phone
+                newPhone.Add(new Phone
                 {
                     Type = (PhoneType)(dataGridView1[1, count].Value),
                     Contact_id = sContact.Id,
                     Number = (string)(dataGridView1[0, count].Value.ToString()),
-                    //  Type = (PhoneType)(row.Cells[1] as DataGridViewComboBoxCell).Value,
-                    //  Number = (string)(((row.Cells[0] as DataGridViewTextBoxCell).Value).ToString())
-                });
+
+                }) ;
+                Console.WriteLine((PhoneType)(dataGridView1[1, count].Value));
+                Console.WriteLine(dataGridView1[0, count].Value.ToString());
                 count++;
             }
             sContact.Name = txbName.Text;
@@ -92,7 +100,7 @@ namespace contacts
             sContact.Bithday = dtBithday.Text;
             sContact.Email = txbMail.Text;
             sContact.Numbers.Clear();
-            sContact.Numbers = newPhones;
+            sContact.Numbers = newPhone;
 
 
             return sContact;
@@ -125,16 +133,15 @@ namespace contacts
                 }
 
 
-                using (SqlCommand command = new SqlCommand("Update Numbers Set Phone=@Phone, Type_id=(Select id from NumberTypes Where Name=@Name) where Contact_id=@id", connection))
+                using (SqlCommand command = new SqlCommand("Update Numbers Set Phone=@Phone, Type_id=(Select id from NumberTypes Where Name='@Name') where Contact_id=@id", connection)) 
                 {
-                    foreach (var i in newPhones)
-                    {
+                   foreach (var i in newPhones)
+                   {              
                         command.Parameters.Add(new SqlParameter("id", sContact.Id));
                         command.Parameters.Add(new SqlParameter("Phone", i.Number));
                         command.Parameters.Add(new SqlParameter("Name", i.Type));
-
                         command.ExecuteNonQuery();
-                    }
+                   }
                 }
             }
         }
@@ -171,7 +178,7 @@ namespace contacts
                     }
 
                 }
-                var i = dataGridView1.Rows.Count-1;
+                var i = dataGridView1.Rows.Count - 1;
                 var count = 0;
                 Console.WriteLine(i);
                 while (count < i)
@@ -203,8 +210,8 @@ namespace contacts
             //   }
             //  else if (txbName.Text.Length > 0)
             //   {
-           SaveChangesContact(Contact);
-           SaveContactToDB(Contact);
+            SaveChangesContact(Contact);
+            SaveContactToDB(Contact);
             ///    }
 
         }
@@ -249,5 +256,24 @@ namespace contacts
             else { flag = false; enterName.Visible = true; }
 
         }
+
+        // private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        //  {
+        //     switch (e.ColumnIndex)
+        //    {
+        //        case 0: e.Value = newPhones[e.RowIndex].Number; break;
+        //        case 1: e.Value = newPhones[e.RowIndex].Type; break;
+        //    }
+        // }
+
+        //  private void dataGridView1_CellValuePushed(object sender, DataGridViewCellValueEventArgs e)
+        //  {
+        //    switch (e.ColumnIndex)
+        //    {
+        //       case 0: newPhones[e.RowIndex].Number = e.Value.ToString(); break;
+        //       case 1: Type.DataPropertyName = ((PhoneType)(e.Value)).ToString(); // newPhones[e.RowIndex].Type = (PhoneType)(e.Value);
+        //                break;
+        //   }
+        //  }
     }
 }

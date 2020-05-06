@@ -16,7 +16,6 @@ namespace contacts.logic
         Home = 2,
         Work = 3
     }
-    
     public class Phone
     {
         public string Number { get; set; } = null;
