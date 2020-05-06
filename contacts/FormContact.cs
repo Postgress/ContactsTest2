@@ -32,7 +32,7 @@ namespace contacts
             Numbers.DataPropertyName = "Number";
             Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();     //Enum.GetValues(typeof(PhoneType));  
             Types.DisplayMember = "Name";
-            Types.ValueMember = "Value";
+            Types.ValueMember = "Name";
             Types.DataPropertyName = "Type";
             bindingSource.DataSource = Contact.Numbers;
 
@@ -255,6 +255,15 @@ namespace contacts
             if (txbName.Text.Length > 0) { flag = true; }
             else { flag = false; enterName.Visible = true; }
 
+        }
+
+        private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            object value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            if (!((DataGridViewComboBoxColumn)dataGridView1.Columns[e.ColumnIndex]).Items.Contains(value))
+            {
+                e.ThrowException = false;
+            }
         }
 
         // private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
