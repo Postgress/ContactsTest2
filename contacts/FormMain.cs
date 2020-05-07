@@ -66,7 +66,7 @@ namespace contacts
 
             if (f.ShowDialog(this) == DialogResult.OK)
             {
-
+               // f.Close();
 
             }
             else

@@ -17,7 +17,6 @@ namespace contacts
         bool flag = false;
         private BindingSource bindingSource = new BindingSource();
         public List<Phone> newPhones = new List<Phone>();
-        //List<EnumModel> enums = ((PhoneType[])Enum.GetValues(typeof(PhoneType))).Select(c => new EnumModel() { Value = (int)c, Name = c.ToString() }).ToList();
 
         public FormContact(Contact contact)
         {
@@ -27,16 +26,13 @@ namespace contacts
             newPhones = Contact.Numbers;
 
             dataGridView1.DataSource = bindingSource;
-            //bindingSource.DataSource = Contact.Numbers;
             Numbers.DataPropertyName = "Number";
-            Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();     //Enum.GetValues(typeof(PhoneType));  
+            Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();   
             Types.DisplayMember = "Name";
             Types.ValueMember = "Name";
             Types.DataPropertyName = "Type";
             bindingSource.DataSource = Contact.Numbers;
 
-            // dataGridView1.Columns["Number"].Visible = true;
-            //dataGridView1.Columns["Type"].Visible = true;
             dataGridView1.Columns["Contact_id"].Visible = false;
         }
 
@@ -115,7 +111,7 @@ namespace contacts
                 connection.Open();
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = connection;
-                using (SqlCommand command = new SqlCommand("Update Contacts Set Name=@Name , LastName=@LastName, SecondName= @SecondName , Email=@Email , Bithday=@Bithday , Image = @Image Where Id=@id )", connection))
+                using (SqlCommand command = new SqlCommand("Update Contacts Set Name=@Name , LastName=@LastName, SecondName= @SecondName , Email=@Email , Bithday=@Bithday , Image = @Image Where Id=@id ", connection))
                 {
 
                     command.Parameters.Add(new SqlParameter("id", sContact.Id));
@@ -130,14 +126,20 @@ namespace contacts
                     command.Parameters.Add(new SqlParameter("Bithday", sContact.Bithday));
                     if (sContact.ImageBytes == null) { command.Parameters.Add("@Image", System.Data.SqlDbType.VarBinary, -1).Value = DBNull.Value; }
                     command.Parameters.Add(new SqlParameter("Image", sContact.ImageBytes));
+                    command.ExecuteNonQuery();
                 }
 
-                
-
-                using (SqlCommand command = new SqlCommand("Update Numbers Set Phone=@Phone, Type_id=@Type_id where Contact_id=@id", connection))
+                using (SqlCommand command = new SqlCommand("Delete from Numbers where Contact_id=@Contact_id", connection))
                 {
-                    foreach (var i in newPhones)
+                    command.Parameters.Add(new SqlParameter("Contact_id", sContact.Id));
+                    command.ExecuteNonQuery(); ; 
+                }
+                   
+                foreach (var i in newPhones)
+                {                    
+                    using (SqlCommand command = new SqlCommand("INSERT INTO Numbers (Phone,Contact_id,Type_id) Values (@Phone , @Contact_id , @Type_id)", connection))
                     {
+
                         using (SqlCommand command2 = new SqlCommand("Select id from NumberTypes Where Name=@Name", connection))
                         {
                             command2.Parameters.Add(new SqlParameter("Name", i.Type.ToString()));
@@ -149,8 +151,8 @@ namespace contacts
                                 }
                             }
                         }
-                        command.Parameters.Add(new SqlParameter("id", sContact.Id));
-                        command.Parameters.Add(new SqlParameter("Phone", i.Number));
+                        command.Parameters.Add(new SqlParameter("Contact_id", sContact.Id));
+                        command.Parameters.Add(new SqlParameter("Phone", i.Number.ToString()));
                         command.Parameters.Add(new SqlParameter("Type_id", idType));
                         command.ExecuteNonQuery();
                     }
@@ -207,7 +209,7 @@ namespace contacts
                             if (sqlReader.Read())
                             {
                                 idNum = Convert.ToInt32(sqlReader[0]);
-                            }                            
+                            }
                         }
                     }
                     using (SqlCommand command = new SqlCommand("INSERT INTO Numbers (Phone,Contact_id,Type_id) Values (@Phone , @Contact_id , @Type_id)", connection))
@@ -227,14 +229,18 @@ namespace contacts
         private void bCreate_Click(object sender, EventArgs e)
         {
 
+                
+
+
             //  if (flag == true && txbName.Text.Length > 0)
             //  {
-            loadNewContactToDataBase(Contact);
+            //loadNewContactToDataBase(Contact);
             //   }
             //  else if (txbName.Text.Length > 0)
             //   {
-            // SaveChangesContact(Contact);
-            // SaveContactToDB(Contact);
+            SaveChangesContact(Contact);
+            SaveContactToDB(Contact);
+            this.Close();
             ///    }
 
         }
@@ -282,11 +288,11 @@ namespace contacts
 
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            object value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-            if (!((DataGridViewComboBoxColumn)dataGridView1.Columns[e.ColumnIndex]).Items.Contains(value))
-            {
-                e.ThrowException = false;
-            }
+            //object value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            //if (!((DataGridViewComboBoxColumn)dataGridView1.Columns[e.ColumnIndex]).Items.Contains(value))
+            //{
+              //  e.ThrowException = false;
+           // }
         }
 
         // private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
