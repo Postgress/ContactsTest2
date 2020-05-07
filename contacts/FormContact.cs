@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows.Documents;
 using System.Windows.Forms;
 
 
@@ -58,7 +57,7 @@ namespace contacts
             else { enterName.Visible = true; flag = false; }
 
         }
-        
+
 
         private void picB1_Click(object sender, EventArgs e)
         {
@@ -79,7 +78,7 @@ namespace contacts
         public Contact SaveChangesContact(Contact sContact)
         {
             List<Phone> newPhone = new List<Phone>();
-            var i = dataGridView1.Rows.Count-1;
+            var i = dataGridView1.Rows.Count - 1;
             var count = 0;
             while (count < i)
             {
@@ -89,7 +88,7 @@ namespace contacts
                     Contact_id = sContact.Id,
                     Number = (string)(dataGridView1[0, count].Value.ToString()),
 
-                }) ;
+                });
                 Console.WriteLine((PhoneType)(dataGridView1[1, count].Value));
                 Console.WriteLine(dataGridView1[0, count].Value.ToString());
                 count++;
@@ -108,6 +107,7 @@ namespace contacts
         public void SaveContactToDB(Contact sContact)
         {
             newPhones = sContact.Numbers;
+            Int32 idType = 0;
             string connectString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
             using (SqlConnection connection = new SqlConnection(connectString))
             {
@@ -132,16 +132,28 @@ namespace contacts
                     command.Parameters.Add(new SqlParameter("Image", sContact.ImageBytes));
                 }
 
+                
 
-                using (SqlCommand command = new SqlCommand("Update Numbers Set Phone=@Phone, Type_id=(Select id from NumberTypes Where Name='@Name') where Contact_id=@id", connection)) 
+                using (SqlCommand command = new SqlCommand("Update Numbers Set Phone=@Phone, Type_id=@Type_id where Contact_id=@id", connection))
                 {
-                   foreach (var i in newPhones)
-                   {              
+                    foreach (var i in newPhones)
+                    {
+                        using (SqlCommand command2 = new SqlCommand("Select id from NumberTypes Where Name=@Name", connection))
+                        {
+                            command2.Parameters.Add(new SqlParameter("Name", i.Type.ToString()));
+                            using (SqlDataReader sqlReader = command2.ExecuteReader())
+                            {
+                                if (sqlReader.Read())
+                                {
+                                    idType = Convert.ToInt32(sqlReader[0]);
+                                }
+                            }
+                        }
                         command.Parameters.Add(new SqlParameter("id", sContact.Id));
                         command.Parameters.Add(new SqlParameter("Phone", i.Number));
-                        command.Parameters.Add(new SqlParameter("Name", i.Type));
+                        command.Parameters.Add(new SqlParameter("Type_id", idType));
                         command.ExecuteNonQuery();
-                   }
+                    }
                 }
             }
         }
@@ -149,6 +161,7 @@ namespace contacts
         {
 
             Int32 newProdID = 0;
+            Int32 idNum = 0;
             string connectString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
             using (SqlConnection connection = new SqlConnection(connectString))
             {
@@ -176,29 +189,39 @@ namespace contacts
                     {
                         Console.WriteLine(ex.Message);
                     }
-
                 }
+
                 var i = dataGridView1.Rows.Count - 1;
                 var count = 0;
-                Console.WriteLine(i);
                 while (count < i)
                 {
-                    var number = dataGridView1[0, count].FormattedValue;
-                    var name = dataGridView1[1, count].FormattedValue;
+                    var number = dataGridView1[0, count].FormattedValue.ToString();
+                    var name = dataGridView1[1, count].FormattedValue.ToString();
                     Console.WriteLine(number);
                     Console.WriteLine(name);
-                    using (SqlCommand command = new SqlCommand("INSERT INTO Numbers Values Phone=@Phone Contact_id=@Contact_id Type_id=2)", connection))
+                    using (SqlCommand command = new SqlCommand("Select id from NumberTypes Where Name=@Name", connection))
                     {
-                        command.Parameters.Add(new SqlParameter("Phone", dataGridView1[0, count].FormattedValue.ToString()));
+                        command.Parameters.Add(new SqlParameter("Name", name));
+                        using (SqlDataReader sqlReader = command.ExecuteReader())
+                        {
+                            if (sqlReader.Read())
+                            {
+                                idNum = Convert.ToInt32(sqlReader[0]);
+                            }                            
+                        }
+                    }
+                    using (SqlCommand command = new SqlCommand("INSERT INTO Numbers (Phone,Contact_id,Type_id) Values (@Phone , @Contact_id , @Type_id)", connection))
+                    {
+                        command.Parameters.Add(new SqlParameter("Phone", number));
                         command.Parameters.Add(new SqlParameter("Contact_id", newProdID));
-                        command.Parameters.Add(new SqlParameter("Name", dataGridView1[1, count].FormattedValue.ToString()));
+                        command.Parameters.Add(new SqlParameter("Type_id", idNum));
+                        command.ExecuteNonQuery();
+
                     }
                     count++;
                 }
                 connection.Close();
-
             }
-
         }
 
         private void bCreate_Click(object sender, EventArgs e)
@@ -206,12 +229,12 @@ namespace contacts
 
             //  if (flag == true && txbName.Text.Length > 0)
             //  {
-            // loadNewContactToDataBase(Contact);
+            loadNewContactToDataBase(Contact);
             //   }
             //  else if (txbName.Text.Length > 0)
             //   {
-            SaveChangesContact(Contact);
-            SaveContactToDB(Contact);
+            // SaveChangesContact(Contact);
+            // SaveContactToDB(Contact);
             ///    }
 
         }
