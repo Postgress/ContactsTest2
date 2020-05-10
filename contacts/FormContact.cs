@@ -14,20 +14,20 @@ namespace contacts
     {
         private Contact Contact = null;
         private Phone Phone = null;
-        bool flag = false;
         private BindingSource bindingSource = new BindingSource();
         public List<Phone> newPhones = new List<Phone>();
-
-        public FormContact(Contact contact)
+        public bool flag1;
+        public FormContact(Contact contact, bool flag)
         {
             InitializeComponent();
             Contact = contact;
+            flag1 = flag;
             Load += FormContact_Load;
             newPhones = Contact.Numbers;
 
             dataGridView1.DataSource = bindingSource;
             Numbers.DataPropertyName = "Number";
-            Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();   
+            Types.DataSource = Enum.GetValues(typeof(PhoneType)).Cast<PhoneType>().Select(p => new { Name = Enum.GetName(typeof(PhoneType), p), Value = (int)p }).ToList();
             Types.DisplayMember = "Name";
             Types.ValueMember = "Name";
             Types.DataPropertyName = "Type";
@@ -49,8 +49,8 @@ namespace contacts
                 Image returnImage = Image.FromStream(ms);
                 picB1.Image = returnImage;
             }
-            if (txbName.Text.Length > 0) { bCreate.Text = "Сохранить"; flag = true; }
-            else { enterName.Visible = true; flag = false; }
+            if (flag1 == true) { enterName.Visible = true; }
+            else { bCreate.Text = "Сохранить"; }
 
         }
 
@@ -125,18 +125,18 @@ namespace contacts
                     if (String.IsNullOrEmpty(sContact.Bithday)) { command.Parameters.AddWithValue("@Bithday", DBNull.Value); }
                     command.Parameters.Add(new SqlParameter("Bithday", sContact.Bithday));
                     if (sContact.ImageBytes == null) { command.Parameters.Add("@Image", System.Data.SqlDbType.VarBinary, -1).Value = DBNull.Value; }
-                    command.Parameters.Add(new SqlParameter("Image", sContact.ImageBytes));
+                    else command.Parameters.Add(new SqlParameter("Image", sContact.ImageBytes));
                     command.ExecuteNonQuery();
                 }
 
                 using (SqlCommand command = new SqlCommand("Delete from Numbers where Contact_id=@Contact_id", connection))
                 {
                     command.Parameters.Add(new SqlParameter("Contact_id", sContact.Id));
-                    command.ExecuteNonQuery(); ; 
+                    command.ExecuteNonQuery(); ;
                 }
-                   
+
                 foreach (var i in newPhones)
-                {                    
+                {
                     using (SqlCommand command = new SqlCommand("INSERT INTO Numbers (Phone,Contact_id,Type_id) Values (@Phone , @Contact_id , @Type_id)", connection))
                     {
 
@@ -228,38 +228,23 @@ namespace contacts
 
         private void bCreate_Click(object sender, EventArgs e)
         {
+            if (flag1 == true)
+            {
+                loadNewContactToDataBase(Contact);
+            }
+            else
+            {
+                SaveChangesContact(Contact);
+                SaveContactToDB(Contact);
+            }
 
-                
-
-
-            //  if (flag == true && txbName.Text.Length > 0)
-            //  {
-            //loadNewContactToDataBase(Contact);
-            //   }
-            //  else if (txbName.Text.Length > 0)
-            //   {
-            SaveChangesContact(Contact);
-            SaveContactToDB(Contact);
             this.Close();
-            ///    }
-
         }
 
         private void bCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-
-        private void txbName_TextChanged(object sender, EventArgs e)
-        {
-
-            if (enterName.Visible == true)
-            {
-                enterName.Visible = false;
-            }
-            Console.WriteLine(flag.ToString());
-        }
-
 
         private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
@@ -281,8 +266,8 @@ namespace contacts
 
         private void txbName_Leave(object sender, EventArgs e)
         {
-            if (txbName.Text.Length > 0) { flag = true; }
-            else { flag = false; enterName.Visible = true; }
+            if (txbName.Text.Length > 0) { enterName.Visible = false; }
+            else { enterName.Visible = true; }
 
         }
 
@@ -291,27 +276,9 @@ namespace contacts
             //object value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
             //if (!((DataGridViewComboBoxColumn)dataGridView1.Columns[e.ColumnIndex]).Items.Contains(value))
             //{
-              //  e.ThrowException = false;
-           // }
+            //  e.ThrowException = false;
+            // }
         }
 
-        // private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
-        //  {
-        //     switch (e.ColumnIndex)
-        //    {
-        //        case 0: e.Value = newPhones[e.RowIndex].Number; break;
-        //        case 1: e.Value = newPhones[e.RowIndex].Type; break;
-        //    }
-        // }
-
-        //  private void dataGridView1_CellValuePushed(object sender, DataGridViewCellValueEventArgs e)
-        //  {
-        //    switch (e.ColumnIndex)
-        //    {
-        //       case 0: newPhones[e.RowIndex].Number = e.Value.ToString(); break;
-        //       case 1: Type.DataPropertyName = ((PhoneType)(e.Value)).ToString(); // newPhones[e.RowIndex].Type = (PhoneType)(e.Value);
-        //                break;
-        //   }
-        //  }
     }
 }

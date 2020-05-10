@@ -45,10 +45,10 @@
             this.picB1 = new System.Windows.Forms.PictureBox();
             this.bCancel = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.bCreate = new System.Windows.Forms.Button();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.Numbers = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Types = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.bCreate = new System.Windows.Forms.Button();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -127,7 +127,7 @@
             this.dtBithday.Mask = "00/00/0000";
             this.dtBithday.Name = "dtBithday";
             this.dtBithday.ResetOnSpace = false;
-            this.dtBithday.Size = new System.Drawing.Size(118, 20);
+            this.dtBithday.Size = new System.Drawing.Size(62, 20);
             this.dtBithday.TabIndex = 14;
             this.dtBithday.ValidatingType = typeof(System.DateTime);
             // 
@@ -189,7 +189,6 @@
             this.txbName.Name = "txbName";
             this.txbName.Size = new System.Drawing.Size(224, 20);
             this.txbName.TabIndex = 0;
-            this.txbName.TextChanged += new System.EventHandler(this.txbName_TextChanged);
             this.txbName.Leave += new System.EventHandler(this.txbName_Leave);
             // 
             // txbLName
@@ -246,6 +245,19 @@
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
             this.dataGridView1.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridView1_DataError);
             // 
+            // Numbers
+            // 
+            this.Numbers.HeaderText = "Numbers";
+            this.Numbers.Name = "Numbers";
+            this.Numbers.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Numbers.Width = 250;
+            // 
+            // Types
+            // 
+            this.Types.HeaderText = "Types";
+            this.Types.Name = "Types";
+            this.Types.Width = 200;
+            // 
             // bCreate
             // 
             this.bCreate.Location = new System.Drawing.Point(560, 140);
@@ -265,19 +277,6 @@
             this.splitContainer2.Size = new System.Drawing.Size(668, 183);
             this.splitContainer2.SplitterDistance = 154;
             this.splitContainer2.TabIndex = 0;
-            // 
-            // Numbers
-            // 
-            this.Numbers.HeaderText = "Numbers";
-            this.Numbers.Name = "Numbers";
-            this.Numbers.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Numbers.Width = 250;
-            // 
-            // Types
-            // 
-            this.Types.HeaderText = "Types";
-            this.Types.Name = "Types";
-            this.Types.Width = 200;
             // 
             // FormContact
             // 

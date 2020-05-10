@@ -10,6 +10,7 @@ namespace contacts
         private LogicCore LogicCore = null;
         private BindingSource bindingSource1 = new BindingSource();
         public int idCell = 1;
+        public bool flag = true;
 
         public FormMain1(LogicCore core)
         {
@@ -54,14 +55,15 @@ namespace contacts
 
         private void butAdd_Click(object sender, EventArgs e)
         {
-            var f = new FormContact(new Contact());
-            f.ShowDialog();
+            var f = new FormContact(new Contact(),flag);
+            if (f.ShowDialog(this) == DialogResult.OK) { dataGridViewMain.Refresh(); }
+                
         }
 
         private void butEdit_Click(object sender, EventArgs e)
         {
-
-            var f = new FormContact(LogicCore.FindContact(idCell));
+            flag = false;
+            var f = new FormContact(LogicCore.FindContact(idCell),flag);
 
 
             if (f.ShowDialog(this) == DialogResult.OK)
