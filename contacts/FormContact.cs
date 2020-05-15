@@ -13,13 +13,14 @@ namespace contacts
     public partial class FormContact : Form
     {
         private Contact Contact = null;
-        private Phone Phone = null;
+        private LogicCore LogicCore = null;
         private BindingSource bindingSource = new BindingSource();
         public List<Phone> newPhones = new List<Phone>();
         public bool flag1;
-        public FormContact(Contact contact, bool flag)
+        public FormContact(Contact contact, bool flag, LogicCore core)
         {
             InitializeComponent();
+            LogicCore = core;
             Contact = contact;
             flag1 = flag;
             Load += FormContact_Load;
@@ -85,8 +86,6 @@ namespace contacts
                     Number = (string)(dataGridView1[0, count].Value.ToString()),
 
                 });
-                Console.WriteLine((PhoneType)(dataGridView1[1, count].Value));
-                Console.WriteLine(dataGridView1[0, count].Value.ToString());
                 count++;
             }
             sContact.Name = txbName.Text;
@@ -100,65 +99,8 @@ namespace contacts
 
             return sContact;
         }
-        public void SaveContactToDB(Contact sContact)
-        {
-            newPhones = sContact.Numbers;
-            Int32 idType = 0;
-            string connectString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
-            using (SqlConnection connection = new SqlConnection(connectString))
-            {
-
-                connection.Open();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = connection;
-                using (SqlCommand command = new SqlCommand("Update Contacts Set Name=@Name , LastName=@LastName, SecondName= @SecondName , Email=@Email , Bithday=@Bithday , Image = @Image Where Id=@id ", connection))
-                {
-
-                    command.Parameters.Add(new SqlParameter("id", sContact.Id));
-                    command.Parameters.Add(new SqlParameter("Name", sContact.Name));
-                    if (String.IsNullOrEmpty(sContact.LastName)) { command.Parameters.AddWithValue("@LastName", DBNull.Value); }
-                    else command.Parameters.Add(new SqlParameter("LastName", sContact.LastName));
-                    if (String.IsNullOrEmpty(sContact.SecondName)) { command.Parameters.AddWithValue("@SecondName", DBNull.Value); }
-                    else command.Parameters.Add(new SqlParameter("SecondName", sContact.SecondName));
-                    if (String.IsNullOrEmpty(sContact.Email)) { command.Parameters.AddWithValue("@Email", DBNull.Value); }
-                    else command.Parameters.Add(new SqlParameter("Email", sContact.Email));
-                    if (String.IsNullOrEmpty(sContact.Bithday)) { command.Parameters.AddWithValue("@Bithday", DBNull.Value); }
-                    command.Parameters.Add(new SqlParameter("Bithday", sContact.Bithday));
-                    if (sContact.ImageBytes == null) { command.Parameters.Add("@Image", System.Data.SqlDbType.VarBinary, -1).Value = DBNull.Value; }
-                    else command.Parameters.Add(new SqlParameter("Image", sContact.ImageBytes));
-                    command.ExecuteNonQuery();
-                }
-
-                using (SqlCommand command = new SqlCommand("Delete from Numbers where Contact_id=@Contact_id", connection))
-                {
-                    command.Parameters.Add(new SqlParameter("Contact_id", sContact.Id));
-                    command.ExecuteNonQuery(); ;
-                }
-
-                foreach (var i in newPhones)
-                {
-                    using (SqlCommand command = new SqlCommand("INSERT INTO Numbers (Phone,Contact_id,Type_id) Values (@Phone , @Contact_id , @Type_id)", connection))
-                    {
-
-                        using (SqlCommand command2 = new SqlCommand("Select id from NumberTypes Where Name=@Name", connection))
-                        {
-                            command2.Parameters.Add(new SqlParameter("Name", i.Type.ToString()));
-                            using (SqlDataReader sqlReader = command2.ExecuteReader())
-                            {
-                                if (sqlReader.Read())
-                                {
-                                    idType = Convert.ToInt32(sqlReader[0]);
-                                }
-                            }
-                        }
-                        command.Parameters.Add(new SqlParameter("Contact_id", sContact.Id));
-                        command.Parameters.Add(new SqlParameter("Phone", i.Number.ToString()));
-                        command.Parameters.Add(new SqlParameter("Type_id", idType));
-                        command.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
+        
+       
         private void loadNewContactToDataBase(Contact sContact)
         {
 
@@ -199,8 +141,6 @@ namespace contacts
                 {
                     var number = dataGridView1[0, count].FormattedValue.ToString();
                     var name = dataGridView1[1, count].FormattedValue.ToString();
-                    Console.WriteLine(number);
-                    Console.WriteLine(name);
                     using (SqlCommand command = new SqlCommand("Select id from NumberTypes Where Name=@Name", connection))
                     {
                         command.Parameters.Add(new SqlParameter("Name", name));
@@ -235,7 +175,7 @@ namespace contacts
             else
             {
                 SaveChangesContact(Contact);
-                SaveContactToDB(Contact);
+                LogicCore.SaveContactToDB(Contact);
             }
 
             this.Close();

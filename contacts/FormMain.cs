@@ -55,26 +55,25 @@ namespace contacts
 
         private void butAdd_Click(object sender, EventArgs e)
         {
-            var f = new FormContact(new Contact(),flag);
-            if (f.ShowDialog(this) == DialogResult.OK) { dataGridViewMain.Refresh(); }
-                
+            var f = new FormContact(new Contact(),flag,LogicCore);
+            f.FormClosed += new FormClosedEventHandler(f_FormClosed);
+            f.ShowDialog();            
         }
+        void f_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            dataGridViewMain.Refresh();
 
+            //Код для обновления
+        }
+        
         private void butEdit_Click(object sender, EventArgs e)
         {
             flag = false;
-            var f = new FormContact(LogicCore.FindContact(idCell),flag);
+            var f = new FormContact(LogicCore.FindContact(idCell),flag,LogicCore);
 
-
-            if (f.ShowDialog(this) == DialogResult.OK)
-            {
-               // f.Close();
-
-            }
-            else
-            {
-
-            }
+            f.FormClosed += new FormClosedEventHandler(f_FormClosed);
+            f.ShowDialog();
+            
         }
 
 

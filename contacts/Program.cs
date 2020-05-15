@@ -21,4 +21,5 @@ namespace contacts
             
         }
     }
+    public delegate void MyDelegate(string data);
 }
