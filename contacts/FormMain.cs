@@ -35,6 +35,8 @@ namespace contacts
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            // TODO: данная строка кода позволяет загрузить данные в таблицу "phoneContactsDataSet.Contacts". При необходимости она может быть перемещена или удалена.
+            this.contactsTableAdapter.Fill(this.phoneContactsDataSet.Contacts);
 
         }
 
@@ -55,25 +57,30 @@ namespace contacts
 
         private void butAdd_Click(object sender, EventArgs e)
         {
+            flag = true;
             var f = new FormContact(new Contact(),flag,LogicCore);
-            f.FormClosed += new FormClosedEventHandler(f_FormClosed);
-            f.ShowDialog();            
-        }
-        void f_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            dataGridViewMain.Refresh();
+            f.FormClosing += new FormClosingEventHandler(F_FormClosing);
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                //LogicCore.LoadFirst();
+                dataGridViewMain.Refresh();
+            }
 
-            //Код для обновления
         }
-        
+
+        private void F_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            LogicCore.LoadFirst();
+            dataGridViewMain.Refresh();
+        }
+
         private void butEdit_Click(object sender, EventArgs e)
         {
             flag = false;
             var f = new FormContact(LogicCore.FindContact(idCell),flag,LogicCore);
 
-            f.FormClosed += new FormClosedEventHandler(f_FormClosed);
-            f.ShowDialog();
-            
+            f.ShowDialog();            
         }
 
 
@@ -81,12 +88,14 @@ namespace contacts
 
         public void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            idCell = Convert.ToInt32(this.dataGridViewMain.CurrentRow.Cells["Id"].Value);
         }
 
         private void dataGridViewMain_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            idCell = Convert.ToInt32(this.dataGridViewMain.CurrentRow.Cells["Id"].Value);
+            //idCell = Convert.ToInt32(this.dataGridViewMain.CurrentRow.Cells["Id"].Value);
         }
+
     }
 }
 

@@ -72,8 +72,6 @@ namespace contacts.logic
                     }
                 }
             }
-           // if (ContactAdded != null)
-             //   ContactAdded(sContact);
         }
 
         public void LoadFirst()
@@ -82,7 +80,7 @@ namespace contacts.logic
             Phones.Clear();
             string connString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
             SqlConnection con = new SqlConnection(connString);
-            string sqlQueryString = "SELECT* from Contacts ";
+            string sqlQueryString = "SELECT * from Contacts ";
             SqlCommand cmd = new SqlCommand(sqlQueryString, con);
             con.Open();
             SqlDataReader dataReader = cmd.ExecuteReader();
@@ -170,6 +168,30 @@ namespace contacts.logic
                 }
              
             }
+        }
+        public bool CheckDuplicate(string Numb)
+        {
+            string Number = null;
+            string connString = @"Data Source=.\SQLEXPRESS; Initial Catalog=PhoneContacts; Integrated Security=True;";
+            using (SqlConnection con = new SqlConnection(connString))
+            {
+                con.Open();
+                string sqlQueryString2 = "Select * From Numbers where Phone=@num ";
+                using (SqlCommand cmd2 = new SqlCommand(sqlQueryString2, con))
+                {
+                    cmd2.Parameters.Add(new SqlParameter("num", Numb));
+                    SqlDataReader datareader1 = cmd2.ExecuteReader();
+                    while (datareader1.Read())
+                    {
+                        Number = datareader1["Phone"] as string;
+                    }
+                }
+            }
+            if (Number.Length>0)
+            {
+                return true;
+            }
+            else { return false; }
         }
     }
 }

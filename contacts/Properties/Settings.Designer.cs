@@ -44,5 +44,16 @@ namespace contacts.Properties {
                 return ((string)(this["PhoneContactsConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ALFATV\\SQLEXPRESS;Initial Catalog=PhoneContacts;Integrated Security=T" +
+            "rue")]
+        public string PhoneContactsConnectionString1 {
+            get {
+                return ((string)(this["PhoneContactsConnectionString1"]));
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace contacts
         private LogicCore LogicCore = null;
         private BindingSource bindingSource = new BindingSource();
         public List<Phone> newPhones = new List<Phone>();
-        public bool flag1;
+        public bool flag1=true;
         public FormContact(Contact contact, bool flag, LogicCore core)
         {
             InitializeComponent();
@@ -99,8 +99,8 @@ namespace contacts
 
             return sContact;
         }
-        
-       
+
+
         private void loadNewContactToDataBase(Contact sContact)
         {
 
@@ -168,17 +168,18 @@ namespace contacts
 
         private void bCreate_Click(object sender, EventArgs e)
         {
-            if (flag1 == true)
-            {
-                loadNewContactToDataBase(Contact);
-            }
-            else
-            {
-                SaveChangesContact(Contact);
-                LogicCore.SaveContactToDB(Contact);
-            }
 
-            this.Close();
+            if (flag1 == true)
+                {
+                    loadNewContactToDataBase(Contact);
+                }
+                else
+                {
+                    SaveChangesContact(Contact);
+                    LogicCore.SaveContactToDB(Contact);
+                }           
+            this.Close(); 
+         
         }
 
         private void bCancel_Click(object sender, EventArgs e)

@@ -221,6 +221,7 @@
             // 
             // bCancel
             // 
+            this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.bCancel.Location = new System.Drawing.Point(23, 140);
             this.bCancel.Name = "bCancel";
             this.bCancel.Size = new System.Drawing.Size(75, 23);
@@ -260,6 +261,7 @@
             // 
             // bCreate
             // 
+            this.bCreate.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.bCreate.Location = new System.Drawing.Point(560, 140);
             this.bCreate.Name = "bCreate";
             this.bCreate.Size = new System.Drawing.Size(96, 23);
